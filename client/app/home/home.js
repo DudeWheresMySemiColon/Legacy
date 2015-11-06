@@ -1,7 +1,9 @@
 (function() {
 'use strict';
 
-angular.module('myApp.home', ['ngRoute'])
+angular.module('myApp.home', ['ngRoute', 'ngMaterial', 'ngAnimate', 'ngMdIcons', 'btford.socket-io', 'chat'])
+
+
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/home', {
@@ -10,9 +12,11 @@ angular.module('myApp.home', ['ngRoute'])
   });
 }])
 
-.controller('homeController', ['$scope', '$log', '$http', function($scope, $log, $http) {
+.controller('homeController', ['$scope', '$log', '$http',  function($scope, $log, $http, $mdDialog, socket) {
+
 
 // $SCOPE VARIABLES
+  
   $scope.map;
   $scope.userPosition;
   $scope.sitesResults;
@@ -20,6 +24,8 @@ angular.module('myApp.home', ['ngRoute'])
   $scope.clickedPosition;
   $scope.currentRankByFlag;
   $scope.checkins;
+
+
 
   $scope.sports = {
     'Basketball': 'Basketball Court',
@@ -33,6 +39,9 @@ angular.module('myApp.home', ['ngRoute'])
     'Racquetball': 'Racquetball Court',
     'Squash': 'Squash Court'
   };
+
+
+
 
 // OTHER VARIABLES
   var defaultLocation = {  // this is SF
