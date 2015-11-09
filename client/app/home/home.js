@@ -155,7 +155,7 @@ $scope.send = function(msg){
     'GYM': '../assets/images/gym.png',
     'CLIMBING GYM': '../assets/images/climbing.png',
     'GOLF COURSE': '../assets/images/golf.png',
-    'RAQUETBALL COURT': '../assets/images/racketball.png',
+    'RACKETBALL COURT': '../assets/images/racketball.png',
     'SQUASH COURT': '../assets/images/squash.png'
   };
 
