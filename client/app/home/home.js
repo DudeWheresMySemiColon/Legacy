@@ -101,6 +101,7 @@ $scope.send = function(msg){
   $scope.displayEmailandPrint = EmailandPrint;
   $scope.map;
   $scope.userPosition;
+  $scope.originDirection;
   $scope.sitesResults;
   $scope.currentKeyword;
   $scope.clickedPosition;
@@ -155,14 +156,30 @@ $scope.send = function(msg){
   var currentDestination;
   var currentDestionationName;
 //DIRECTIONS AND DISTANCE FUNCTIONS
+  $scope.checkedLocation = function(val){
+    if(val === "current"){
+      $scope.originDirection = $scope.userPosition
+      $scope.getDirections(currentDestination);
+      getDistanceandDuration(currentDestination);      
+    }else{
+
+      if($scope.clickedPosition){
+        var lat = $scope.clickedPosition.lat();
+        var lng = $scope.clickedPosition.lng(); 
+        $scope.originDirection = {lat: lat,lng: lng};
+        if(currentDestination){
+          $scope.getDirections(currentDestination);
+          getDistanceandDuration(currentDestination);
+        }
+      }
+    }
+  };
 
   $scope.getDirections = function(destination){
     EmailandPrint.truth = true;
-    console.log(EmailandPrint.truth)
-    console.log($scope.displayEmailandPrint.truth);
     var directionsService = new google.maps.DirectionsService;
     directionsService.route({
-      origin: $scope.userPosition,
+      origin: $scope.originDirection,
       destination: destination,
       travelMode: google.maps.TravelMode[transportation]
 
@@ -177,16 +194,20 @@ $scope.send = function(msg){
   function getDistanceandDuration(destination,element){
     var service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
-      origins : [$scope.userPosition],
+      origins : [$scope.originDirection],
       destinations : [destination],
+      unitSystem:  google.maps.UnitSystem.IMPERIAL,
       travelMode: google.maps.TravelMode[transportation]
     },DistanceMatrixServiceCallback)
     function DistanceMatrixServiceCallback(response,status){
       $scope.sitesResults[element].distance = response.rows[0].elements[0].distance.text;
+      $scope.sitesResults[element].durationvalue = response.rows[0].elements[0].duration.value;
       $scope.sitesResults[element].duration =response.rows[0].elements[0].duration.text;
+
     } 
   }
-
+$scope.SelectedBase = "Driving"
+$scope.SelectedIcon= "car"
 //
 //SELECT FORM OF TRANSPORATION
   $scope.SelectTransportation = function(base,icon){
@@ -216,8 +237,6 @@ $scope.sendEmail = function(){
   sendemaildata.subject = "Here are the directions to " + currentDestionationName;                            
   sendemaildata.to = $scope.emailaddress;
   sendemaildata.message = document.getElementById("direction-display").innerHTML
-  console.log(sendemaildata.message);
-  console.log(sendemaildata)
   $http({
     method: "POST",
     url: "/send",
@@ -290,16 +309,17 @@ $scope.sendEmail = function(){
     directionsDisplay.setPanel(document.getElementById("direction-display"));
   }
 
-  $scope.directionDisplay2 = function(){   
-    directionsDisplay.setPanel(document.getElementById("direction-display"));
-  }
 // GEOLOCATE USER'S POSITION
   $scope.userfind = function() {
     getMap(defaultLocation, 12);  // draw map with default location
 
     if (navigator.geolocation) {  // attempt geolocation if user allows
       navigator.geolocation.getCurrentPosition(function(position) {
-        $scope.userPosition = {
+        $scope.userPosition= {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        $scope.originDirection = {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
@@ -343,7 +363,7 @@ $scope.sendEmail = function(){
 
     //THIS STARTS THE INPUT NECESSARY TO FIND THE DISTANCE!
     var destination = {lat:placeLat,lng:placeLng};
-    var origin = $scope.userPosition;
+    var origin = $scope.originDirecton;
     getDistanceandDuration(destination,element)
     if (place.opening_hours && place.opening_hours.open_now) {  // not all Places have opening_hours property, will error on variable assign if they don't
       placeOpenNow = 'Open to play right now!';
