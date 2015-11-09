@@ -64,12 +64,14 @@ socket.on('setup', function (data) {
       });
 
 socket.on('message created', function (data){
-    console.log('our message sent back to us',data)
+    console.log('our message sent back to us',data.room)
 
  $scope.messages.push(data)
 
 
 });
+
+
 
 
 //tell server we just joined to he can connect us to default channel
@@ -143,6 +145,19 @@ $scope.send = function(msg){
   //   'Racquetball': 'Racquetball Court',
   //   'Squash': 'Squash Court'
   // };
+
+   $scope.sportIconsUC = {
+    'BASKETBALL COURT': '../assets/images/basketball.png',
+    'SOCCER FIELD': '../assets/images/soccer.png',
+    'TENNIS Court': '../assets/images/tennis.png',
+    'BASEBALL FIELD': '../assets/images/baseball.png',
+    'SOFTBALL FIELD': '../assets/images/softball.png',
+    'GYM': '../assets/images/gym.png',
+    'CLIMBING GYM': '../assets/images/climbing.png',
+    'GOLF COURSE': '../assets/images/golf.png',
+    'RAQUETBALL COURT': '../assets/images/racketball.png',
+    'SQUASH COURT': '../assets/images/squash.png'
+  };
 
 // OTHER VARIABLES
   var transportation = "DRIVING";

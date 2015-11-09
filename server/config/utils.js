@@ -45,7 +45,7 @@ exports.postUserInfo = function(userInfo) {  // post user info to our db
 //messages
 
 exports.getMsgs = function(req, res){
-  var reqChannel = req.query.room.toLowerCase()
+  var reqChannel = req.query.room.toUpperCase()
 
   //promisify an aggregation query
   var chats = Q.nbind(User.aggregate,User);
@@ -57,7 +57,7 @@ exports.getMsgs = function(req, res){
                     {$unwind: '$messages'}])
     .then(function(data){
       //send back the client, messages array returned from above query
-      //console.log('sending the client',data)
+      console.log('sending the client',data)
       res.send(data)
     })
 }

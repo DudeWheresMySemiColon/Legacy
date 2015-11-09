@@ -138,7 +138,6 @@ socket.on('switch channel',function(data){
  
 //when the user first connects, the socket shall be assigned to join the default channel
 socket.on("new user", function(data){
-  console.log('server heard user joined')
   data.room  = defaultSport;
   socket.join(defaultSport.toUpperCase());
   io.in(defaultSport.toUpperCase()).emit('user joined',data)
@@ -152,10 +151,10 @@ socket.on("new user", function(data){
         obj.username = data.username;
         obj.messages = {};
         obj.messages.content = data.content;
+        obj.messages.room = data.room;
        
-
+        //fast broadcast of message just received but only to the specific channel
     io.in(data.room.toUpperCase()).emit('message created',obj)
-    console.log('new message incoming',data.room.toUpperCase(),obj)
 
     var findUser = Q.nbind(User.findOne, User);
 
@@ -168,13 +167,14 @@ socket.on("new user", function(data){
           var update = Q.nbind(User.findByIdAndUpdate, User);
 
           var newMsg = {
+            room: data.room,
             content: data.content,
-            room: data.room.toLowerCase(),
             created: new Date()
           };
           update(user._id,
             {$push: {"messages" : newMsg}})
         }
+        console.log('saved model',newMsg)
       }).then(function(data){
         console.log('message saved :)')
         
