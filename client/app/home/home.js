@@ -149,7 +149,7 @@ $scope.send = function(msg){
    $scope.sportIconsUC = {
     'BASKETBALL COURT': '../assets/images/basketball.png',
     'SOCCER FIELD': '../assets/images/soccer.png',
-    'TENNIS Court': '../assets/images/tennis.png',
+    'TENNIS COURT': '../assets/images/tennis.png',
     'BASEBALL FIELD': '../assets/images/baseball.png',
     'SOFTBALL FIELD': '../assets/images/softball.png',
     'GYM': '../assets/images/gym.png',
