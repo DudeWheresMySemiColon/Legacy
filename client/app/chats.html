@@ -4,16 +4,16 @@
     <link rel="stylesheet" href="../bower_components/animate.css/animate.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/0.11.4/angular-material.css">
 
-<div layout="row"  ng-init="usernameModal()">
+<div layout="row">
 
         <div flex="33">
           <md-subheader class="md-primary">Change sport:</md-subheader>
-              <md-select placeholder="Rooms"  ng-model="room" ng-change="changeRoom(room)">
+              <md-select placeholder="Rooms"  ng-model="r" ng-change="changeRoom(r)">
                     <md-option ng-repeat="r in rooms" value="{{r}}">{{r}}</md-option>
                 </md-select>
                 <md-list>
                           <md-list-item ng-repeat="m in messages.slice().reverse()" class="md-3-line">
-                            <img ng-src="../assets/images/baseball.png" class="md-avatar" />
+                            <img ng-src="{{sportIconsUC[m.messages.room]}}" class="md-avatar" />
                             <div class="md-list-item-text">
                               <h3>{{m.username}}</h3>
                               <p>{{ m.messages.content}}</p>
@@ -37,3 +37,4 @@
     
 
 </div>
+
