@@ -58,6 +58,9 @@ socket.on('setup', function (data) {
     
         $scope.rooms = roomsArray;
         $scope.room = roomsArray[0]
+        console.log($scope.rooms)
+        //tell the server we've connected so he can put us on default channel
+        $scope.initiateRoom()
       });
 
 socket.on('message created', function (data){
@@ -65,17 +68,31 @@ socket.on('message created', function (data){
 
  $scope.messages.push(data)
 
+
 });
+
+
+//tell server we just joined to he can connect us to default channel
+$scope.initiateRoom = function(data){
+  socket.emit('new user', {});
+}
+
+socket.on('user joined',function(data){
+  console.log('server told client of new user')
+})
 
 //function to handle activity when room/sport is changed
 $scope.changeRoom = function(clickedRoom){
-  $scope.room = clickedRoom.toUpperCase();
+
   //emit the switch room signal to the server with the clicked room
   socket.emit('switch channel', {
-    newChannel: clickedRoom
-    //set old channel?
+    newChannel: clickedRoom.toUpperCase(),
+    oldChannel: $scope.room.toUpperCase()
   });
+  $scope.room = clickedRoom.toUpperCase();
+
   $http.get(serverBaseUrl + '/msg?room=' + clickedRoom).success(function(msgs){
+    
     $scope.messages = msgs;
   });
 
@@ -91,7 +108,7 @@ $scope.send = function(msg){
    content: msg,
    username: $scope.username
  });
-
+ console.log('sending a message client',$scope.room)
  $scope.message= ""
 }
  
@@ -114,18 +131,18 @@ $scope.send = function(msg){
     "Bicycling":"bicycle",
     "Transit":"bus"
   }
-  $scope.sports = {
-    'Basketball': 'Basketball Court',
-    'Soccer': 'Soccer Field',
-    'Tennis': 'Tennis Court',
-    'Baseball': 'Baseball Field',
-    'Softball': 'Softball Field',
-    'Gym': 'Gym',
-    'Rock-Climbing': 'Climbing Gym',
-    'Golf': 'Golf Course',
-    'Racquetball': 'Racquetball Court',
-    'Squash': 'Squash Court'
-  };
+  // $scope.sports = {
+  //   'Basketball': 'Basketball Court',
+  //   'Soccer': 'Soccer Field',
+  //   'Tennis': 'Tennis Court',
+  //   'Baseball': 'Baseball Field',
+  //   'Softball': 'Softball Field',
+  //   'Gym': 'Gym',
+  //   'Rock-Climbing': 'Climbing Gym',
+  //   'Golf': 'Golf Course',
+  //   'Racquetball': 'Racquetball Court',
+  //   'Squash': 'Squash Court'
+  // };
 
 // OTHER VARIABLES
   var transportation = "DRIVING";

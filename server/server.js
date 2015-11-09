@@ -106,23 +106,23 @@ io.on('connection', function(socket){
     //emit the sports array on setup of connection
     socket.emit('setup', {sports: sports});
 
-  socket.on('new message', function(data){
-    //the socket broadcast the received message,
-    //for immediate display by other connected clients
-    //however we must ensure that what we broadcast back
-    //has the exact same format as what the database query
-    //will return when it makes the db extraction
-    //i.e. this immediate broadcast signal must precisely match the format 
-    //we ultimately save messages into the DB
-    var obj ={}
-    obj.username = data.username;
-    obj.messages = {};
-    obj.messages.content = data.content;
+  // socket.on('new message', function(data){
+  //   //the socket broadcast the received message,
+  //   //for immediate display by other connected clients
+  //   //however we must ensure that what we broadcast back
+  //   //has the exact same format as what the database query
+  //   //will return when it makes the db extraction
+  //   //i.e. this immediate broadcast signal must precisely match the format 
+  //   //we ultimately save messages into the DB
+  //   var obj ={}
+  //   obj.username = data.username;
+  //   obj.messages = {};
+  //   obj.messages.content = data.content;
 
-    console.log('new message received', obj)
-    io.sockets.emit('message created', obj)
+  //   console.log('new message received', obj)
+  //   io.sockets.emit('message created', obj)
 
-  });
+  // });
 
 //when a user changes sport, server needs to know, this is switching channels/rooms
 socket.on('switch channel',function(data){
@@ -135,11 +135,30 @@ socket.on('switch channel',function(data){
   io.in(data.newChannel).emit('user joined',data);
 
 });
+ 
+//when the user first connects, the socket shall be assigned to join the default channel
+socket.on("new user", function(data){
+  console.log('server heard user joined')
+  data.room  = defaultSport;
+  socket.join(defaultSport.toUpperCase());
+  io.in(defaultSport.toUpperCase()).emit('user joined',data)
+})
 
   //listen for a new chat message & save it to db
   socket.on('new message', function(data){
+    
+    // check that user exists before saving the message
+       var obj ={}
+        obj.username = data.username;
+        obj.messages = {};
+        obj.messages.content = data.content;
+       
+
+    io.in(data.room.toUpperCase()).emit('message created',obj)
+    console.log('new message incoming',data.room.toUpperCase(),obj)
+
     var findUser = Q.nbind(User.findOne, User);
-    //check that user exists before saving the message
+
     findUser({username:data.username})
       .then(function(user){
         if (!user){
@@ -156,8 +175,9 @@ socket.on('switch channel',function(data){
           update(user._id,
             {$push: {"messages" : newMsg}})
         }
-      }).then(function(user){
+      }).then(function(data){
         console.log('message saved :)')
+        
 
       });
   });
